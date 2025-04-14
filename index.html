@@ -71,6 +71,7 @@
             margin-top: 10px;
             border-radius: 6px;
             line-height: 1.5;
+            overflow-wrap: break-word;
         }
         .comment-container {
             display: grid;
@@ -120,6 +121,12 @@
         }
         .copy-btn:hover {
             background-color: var(--success-hover);
+        }
+        .refresh-btn {
+            background-color: var(--warning);
+        }
+        .refresh-btn:hover {
+            background-color: #d35400;
         }
         .section-title {
             background-color: var(--section-bg);
@@ -217,6 +224,21 @@
         .middle-school-area.show, .high-school-area.show {
             display: block;
         }
+        .section-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .section-toggle h2 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
         @media (max-width: 768px) {
             .comment-container {
                 grid-template-columns: 1fr;
@@ -227,6 +249,14 @@
             .radio-group {
                 flex-direction: column;
                 gap: 8px;
+            }
+            .school-level {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .button-group {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -271,33 +301,33 @@
         <div class="form-group">
             <label for="participation">Participation:</label>
             <select id="participation">
-                <option value="actively initiates mathematical discussions and asks insightful questions">Excellent - Initiates discussions</option>
-                <option value="frequently participates in class discussions with valuable contributions">High - Frequent contributions</option>
-                <option value="participates when called upon and offers reasonable responses">Medium - Participates when prompted</option>
-                <option value="rarely volunteers but will answer when directly asked">Low - Reluctant participant</option>
-                <option value="avoids participation and seems disengaged during lessons">Very Low - Disengaged</option>
+                <option value="excellent">Excellent - Initiates discussions</option>
+                <option value="high">High - Frequent contributions</option>
+                <option value="medium">Medium - Participates when prompted</option>
+                <option value="low">Low - Reluctant participant</option>
+                <option value="very_low">Very Low - Disengaged</option>
             </select>
         </div>
         
         <div class="form-group">
             <label for="attitude">Attitude:</label>
             <select id="attitude">
-                <option value="demonstrates exceptional enthusiasm for mathematics and often helps peers understand concepts">Very positive - Helps peers</option>
-                <option value="shows consistent interest in learning and approaches challenges with determination">Positive - Determined learner</option>
-                <option value="is generally cooperative and respectful during math lessons">Neutral - Cooperative</option>
-                <option value="sometimes appears frustrated with challenging material but tries to persist">Mixed - Occasionally frustrated</option>
-                <option value="often displays negative attitudes toward math tasks and concepts">Negative - Resistant</option>
+                <option value="very_positive">Very positive - Helps peers</option>
+                <option value="positive">Positive - Determined learner</option>
+                <option value="neutral">Neutral - Cooperative</option>
+                <option value="mixed">Mixed - Occasionally frustrated</option>
+                <option value="negative">Negative - Resistant</option>
             </select>
         </div>
         
         <div class="form-group">
             <label for="readiness">Readiness:</label>
             <select id="readiness">
-                <option value="consistently arrives fully prepared with materials and completed assignments, often with extra practice work">Excellent - Always prepared with extras</option>
-                <option value="usually comes to class with all required materials and completed assignments">Good - Usually prepared</option>
-                <option value="sometimes forgets materials or assignments but generally tries to keep up">Fair - Occasionally unprepared</option>
-                <option value="frequently comes to class without necessary materials or completed work">Poor - Often unprepared</option>
-                <option value="rarely has required materials and assignments are typically incomplete">Very Poor - Rarely prepared</option>
+                <option value="excellent">Excellent - Always prepared with extras</option>
+                <option value="good">Good - Usually prepared</option>
+                <option value="fair">Fair - Occasionally unprepared</option>
+                <option value="poor">Poor - Often unprepared</option>
+                <option value="very_poor">Very Poor - Rarely prepared</option>
             </select>
         </div>
         
@@ -306,378 +336,386 @@
         <div class="form-group">
             <label for="classwork">Classwork Completion:</label>
             <select id="classwork">
-                <option value="completes all classwork with exceptional accuracy and attention to detail, often going beyond requirements">Excellent - Exceeds expectations</option>
-                <option value="consistently completes classwork thoroughly and meets all requirements">Good - Consistently complete</option>
-                <option value="usually finishes classwork but may need occasional reminders">Fair - Mostly complete</option>
-                <option value="often has incomplete classwork or rushes through tasks">Poor - Frequently incomplete</option>
-                <option value="rarely completes classwork assignments during allotted time">Very Poor - Rarely complete</option>
+                <option value="excellent">Excellent - Exceeds expectations</option>
+                <option value="good">Good - Consistently complete</option>
+                <option value="fair">Fair - Mostly complete</option>
+                <option value="poor">Poor - Frequently incomplete</option>
+                <option value="very_poor">Very Poor - Rarely complete</option>
             </select>
         </div>
         
         <div class="form-group">
             <label for="homework">Homework Completion:</label>
             <select id="homework">
-                <option value="consistently completes homework accurately and on time, often with extra practice problems">Excellent - Always complete + extras</option>
-                <option value="usually submits homework on time with good effort and reasonable accuracy">Good - Usually complete</option>
-                <option value="sometimes completes homework but quality and timeliness vary">Fair - Inconsistent</option>
-                <option value="frequently misses homework deadlines or submits incomplete work">Poor - Often missing</option>
-                <option value="rarely submits homework assignments or submits work that shows minimal effort">Very Poor - Rarely submits</option>
+                <option value="excellent">Excellent - Always complete + extras</option>
+                <option value="good">Good - Usually complete</option>
+                <option value="fair">Fair - Inconsistent</option>
+                <option value="poor">Poor - Often missing</option>
+                <option value="very_poor">Very Poor - Rarely submits</option>
             </select>
         </div>
         
-        <div class="section-title">Math Areas of Instruction</div>
+        <!-- Areas of Instruction Toggle -->
+        <div class="section-toggle">
+            <h2>Math Areas of Instruction</h2>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggleMathAreas">
+                <span class="slider"></span>
+            </label>
+        </div>
         
-        <p>Select which areas to include in comments and rate performance:</p>
+        <div id="mathAreasContainer" style="display: none;">
+            <!-- General Understanding (for both levels) -->
+            <div class="math-area">
+                <div class="toggle-area">
+                    <h3>General Understanding of Concepts</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggleGeneral">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <select id="generalUnderstanding">
+                    <option value="mastery">Mastery of all concepts</option>
+                    <option value="strong">Strong overall understanding</option>
+                    <option value="developing">Developing understanding</option>
+                    <option value="inconsistent">Inconsistent understanding</option>
+                    <option value="significant_gaps">Significant gaps in understanding</option>
+                </select>
+            </div>
 
-        <!-- General Understanding (for both levels) -->
-        <div class="math-area">
-            <div class="toggle-area">
-                <h3>General Understanding of Concepts</h3>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="toggleGeneral">
-                    <span class="slider"></span>
-                </label>
+            <!-- Middle School Areas -->
+            <div id="middleSchoolAreas" class="middle-school-area show">
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Number System</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleNumber">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="numberSystem">
+                        <option value="excels">Excels in number operations</option>
+                        <option value="strong">Strong number sense</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_reinforcement">Needs reinforcement</option>
+                        <option value="significant_struggles">Significant struggles</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Ratio, Rate and Unit Rate</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleRatio">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="ratioRate">
+                        <option value="mastery">Mastery of ratios/rates</option>
+                        <option value="strong">Strong ratio skills</option>
+                        <option value="developing">Developing understanding</option>
+                        <option value="needs_practice">Needs practice</option>
+                        <option value="significant_difficulties">Significant difficulties</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Proportional Relationships</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleProportional">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="proportional">
+                        <option value="advanced">Advanced proportional reasoning</option>
+                        <option value="solid">Solid understanding</option>
+                        <option value="basic">Basic comprehension</option>
+                        <option value="needs_reinforcement">Needs reinforcement</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Percent</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="togglePercent">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="percent">
+                        <option value="excels">Excels in percent applications</option>
+                        <option value="strong">Strong percent skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_reminders">Needs reminders</option>
+                        <option value="significant_difficulties">Significant difficulties</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Basic Algebra</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleAlgebra">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="algebra">
+                        <option value="strong">Strong algebra skills</option>
+                        <option value="good">Good algebra skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_reinforcement">Needs reinforcement</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Geometry</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleGeometry">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="geometry">
+                        <option value="excels">Excels in geometry</option>
+                        <option value="strong">Strong geometry skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_support">Needs support</option>
+                        <option value="significant_struggles">Significant struggles</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Geometry Constructions</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleGeometryConstructions">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="geometryConstructions">
+                        <option value="excels">Excels in constructions</option>
+                        <option value="strong">Strong construction skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_guidance">Needs guidance</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Coordinate Geometry</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleCoordinate">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="coordinate">
+                        <option value="strong">Strong graphing skills</option>
+                        <option value="good">Good graphing skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_support">Needs support</option>
+                        <option value="significant_struggles">Significant struggles</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Statistics</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleStats">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="statistics">
+                        <option value="strong">Strong statistical analysis</option>
+                        <option value="good">Good statistical skills</option>
+                        <option value="developing">Developing understanding</option>
+                        <option value="needs_reinforcement">Needs reinforcement</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Probability</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleProbability">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="probability">
+                        <option value="strong">Strong probability skills</option>
+                        <option value="good">Good probability skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_reminders">Needs reminders</option>
+                        <option value="significant_difficulties">Significant difficulties</option>
+                    </select>
+                </div>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Problem Solving & Applications</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleProblemSolving">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="problemSolving">
+                        <option value="strong">Strong problem solver</option>
+                        <option value="good">Good problem solver</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_guidance">Needs guidance</option>
+                        <option value="major_challenges">Major challenges</option>
+                    </select>
+                </div>
             </div>
-            <select id="generalUnderstanding">
-                <option value="demonstrates comprehensive understanding of all math concepts covered this term">Mastery of all concepts</option>
-                <option value="shows strong understanding of most concepts with minor areas for growth">Strong overall understanding</option>
-                <option value="understands basic concepts but needs reinforcement in some areas">Developing understanding</option>
-                <option value="shows partial understanding with several concepts needing review">Inconsistent understanding</option>
-                <option value="struggles with fundamental understanding of most concepts">Significant gaps in understanding</option>
-            </select>
-        </div>
 
-        <!-- Middle School Areas -->
-        <div id="middleSchoolAreas" class="middle-school-area show">
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Number System</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleNumber">
-                        <span class="slider"></span>
-                    </label>
+            <!-- High School Areas -->
+            <div id="highSchoolAreas" class="high-school-area">
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Advanced Algebra</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleAdvancedAlgebra">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="advancedAlgebra">
+                        <option value="advanced">Advanced algebraic thinker</option>
+                        <option value="strong">Strong algebra skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_reinforcement">Needs reinforcement</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
                 </div>
-                <select id="numberSystem">
-                    <option value="demonstrates exceptional understanding of number systems, including operations with integers, fractions, and decimals">Excels in number operations</option>
-                    <option value="shows strong skills working with various number forms and operations">Strong number sense</option>
-                    <option value="understands basic number concepts but needs practice with more complex operations">Developing skills</option>
-                    <option value="sometimes struggles with number operations and place value concepts">Needs reinforcement</option>
-                    <option value="has difficulty with fundamental number concepts and operations">Significant struggles</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Ratio, Rate and Unit Rate</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleRatio">
-                        <span class="slider"></span>
-                    </label>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Functions</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleFunctions">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="functions">
+                        <option value="mastery">Mastery of functions</option>
+                        <option value="strong">Strong function skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_support">Needs support</option>
+                        <option value="significant_struggles">Significant struggles</option>
+                    </select>
                 </div>
-                <select id="ratioRate">
-                    <option value="exhibits mastery in solving complex ratio, rate, and unit rate problems with creative approaches">Mastery of ratios/rates</option>
-                    <option value="solves most ratio and rate problems accurately and efficiently">Strong ratio skills</option>
-                    <option value="understands basic ratio concepts but needs support with more complex applications">Developing understanding</option>
-                    <option value="sometimes confuses ratio concepts and needs reminders about procedures">Needs practice</option>
-                    <option value="struggles with fundamental ratio and rate concepts">Significant difficulties</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Proportional Relationships</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleProportional">
-                        <span class="slider"></span>
-                    </label>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Trigonometry</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleTrigonometry">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="trigonometry">
+                        <option value="excels">Excels in trigonometry</option>
+                        <option value="strong">Strong trig skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_reminders">Needs reminders</option>
+                        <option value="significant_difficulties">Significant difficulties</option>
+                    </select>
                 </div>
-                <select id="proportional">
-                    <option value="analyzes and solves proportional relationship problems with sophisticated reasoning and multiple strategies">Advanced proportional reasoning</option>
-                    <option value="solves proportional relationship problems accurately using appropriate methods">Solid understanding</option>
-                    <option value="understands direct proportion but needs support with inverse relationships">Basic comprehension</option>
-                    <option value="sometimes struggles to recognize and solve proportion problems">Needs reinforcement</option>
-                    <option value="has difficulty understanding proportional relationships">Significant challenges</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Percent</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="togglePercent">
-                        <span class="slider"></span>
-                    </label>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Analytic Geometry</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleAnalyticGeometry">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="analyticGeometry">
+                        <option value="advanced">Advanced analytic geometry skills</option>
+                        <option value="strong">Strong analytic skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_reinforcement">Needs reinforcement</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
                 </div>
-                <select id="percent">
-                    <option value="solves complex percent problems including multi-step applications and real-world scenarios">Excels in percent applications</option>
-                    <option value="calculates percentages accurately and solves basic application problems">Strong percent skills</option>
-                    <option value="understands basic percent concepts but needs practice with applications">Developing skills</option>
-                    <option value="sometimes confuses percent concepts and calculations">Needs reminders</option>
-                    <option value="struggles with fundamental percent concepts">Significant difficulties</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Basic Algebra</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleAlgebra">
-                        <span class="slider"></span>
-                    </label>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Calculus Fundamentals</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleCalculus">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="calculus">
+                        <option value="excels">Excels in calculus</option>
+                        <option value="strong">Strong calculus skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_support">Needs support</option>
+                        <option value="significant_struggles">Significant struggles</option>
+                    </select>
                 </div>
-                <select id="algebra">
-                    <option value="demonstrates strong algebraic reasoning, solving equations and inequalities with understanding">Strong algebra skills</option>
-                    <option value="solves linear equations accurately and explains reasoning">Good algebra skills</option>
-                    <option value="understands basic algebraic concepts but needs support with more complex problems">Developing skills</option>
-                    <option value="sometimes struggles with algebraic notation and solving equations">Needs reinforcement</option>
-                    <option value="has difficulty with fundamental algebraic concepts">Significant challenges</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Geometry</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleGeometry">
-                        <span class="slider"></span>
-                    </label>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Advanced Statistics</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleAdvancedStats">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="advancedStats">
+                        <option value="advanced">Advanced statistical analysis</option>
+                        <option value="strong">Strong statistical skills</option>
+                        <option value="developing">Developing understanding</option>
+                        <option value="needs_reinforcement">Needs reinforcement</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
                 </div>
-                <select id="geometry">
-                    <option value="demonstrates excellent understanding of geometric concepts including area, volume, and properties of shapes">Excels in geometry</option>
-                    <option value="calculates area and volume accurately and understands shape properties">Strong geometry skills</option>
-                    <option value="understands basic geometric concepts but needs practice with applications">Developing skills</option>
-                    <option value="sometimes struggles with geometric formulas and concepts">Needs support</option>
-                    <option value="has difficulty with fundamental geometric concepts">Significant struggles</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Geometry Constructions</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleGeometryConstructions">
-                        <span class="slider"></span>
-                    </label>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Discrete Mathematics</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleDiscreteMath">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="discreteMath">
+                        <option value="excels">Excels in discrete math</option>
+                        <option value="strong">Strong discrete math skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_support">Needs support</option>
+                        <option value="significant_struggles">Significant struggles</option>
+                    </select>
                 </div>
-                <select id="geometryConstructions">
-                    <option value="demonstrates precision and understanding in all geometric constructions using appropriate tools">Excels in constructions</option>
-                    <option value="completes geometric constructions accurately with proper tool use">Strong construction skills</option>
-                    <option value="understands basic constructions but needs practice with more complex ones">Developing skills</option>
-                    <option value="sometimes struggles with proper tool use and construction techniques">Needs guidance</option>
-                    <option value="has difficulty completing basic geometric constructions">Significant challenges</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Coordinate Geometry</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleCoordinate">
-                        <span class="slider"></span>
-                    </label>
+                
+                <div class="math-area">
+                    <div class="toggle-area">
+                        <h3>Mathematical Modeling</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleModeling">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <select id="modeling">
+                        <option value="advanced">Advanced modeling skills</option>
+                        <option value="strong">Strong modeling skills</option>
+                        <option value="developing">Developing skills</option>
+                        <option value="needs_guidance">Needs guidance</option>
+                        <option value="significant_challenges">Significant challenges</option>
+                    </select>
                 </div>
-                <select id="coordinate">
-                    <option value="graphs linear equations accurately and interprets graphs with sophisticated understanding">Strong graphing skills</option>
-                    <option value="plots points and graphs linear equations correctly">Good graphing skills</option>
-                    <option value="understands basic coordinate graphing but needs practice with analysis">Developing skills</option>
-                    <option value="sometimes struggles with plotting points and graphing equations">Needs support</option>
-                    <option value="has difficulty understanding the coordinate plane">Significant struggles</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Statistics</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleStats">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="statistics">
-                    <option value="analyzes and interprets statistical data with insightful observations">Strong statistical analysis</option>
-                    <option value="calculates and interprets basic statistics accurately">Good statistical skills</option>
-                    <option value="understands basic statistics but needs support with interpretation">Developing understanding</option>
-                    <option value="sometimes struggles with statistical calculations and concepts">Needs reinforcement</option>
-                    <option value="has difficulty with fundamental statistical concepts">Significant challenges</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Probability</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleProbability">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="probability">
-                    <option value="solves probability problems accurately and explains reasoning clearly">Strong probability skills</option>
-                    <option value="calculates probabilities correctly for basic scenarios">Good probability skills</option>
-                    <option value="understands basic probability concepts but needs practice with applications">Developing skills</option>
-                    <option value="sometimes confuses probability concepts and calculations">Needs reminders</option>
-                    <option value="struggles with fundamental probability concepts">Significant difficulties</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Problem Solving & Applications</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleProblemSolving">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="problemSolving">
-                    <option value="approaches multi-step problems with effective strategies and persists through challenges">Strong problem solver</option>
-                    <option value="solves most problems accurately using appropriate methods">Good problem solver</option>
-                    <option value="solves basic problems but needs support with more complex applications">Developing skills</option>
-                    <option value="sometimes struggles to apply mathematical concepts to problem situations">Needs guidance</option>
-                    <option value="has difficulty applying math concepts to solve problems">Major challenges</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- High School Areas -->
-        <div id="highSchoolAreas" class="high-school-area">
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Advanced Algebra</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleAdvancedAlgebra">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="advancedAlgebra">
-                    <option value="demonstrates exceptional algebraic reasoning, solving complex equations and inequalities with multiple strategies">Advanced algebraic thinker</option>
-                    <option value="solves polynomial and rational equations accurately and explains reasoning">Strong algebra skills</option>
-                    <option value="understands algebraic concepts but needs support with complex problems">Developing skills</option>
-                    <option value="sometimes struggles with advanced algebraic notation and solving techniques">Needs reinforcement</option>
-                    <option value="has difficulty with fundamental algebraic concepts">Significant challenges</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Functions</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleFunctions">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="functions">
-                    <option value="analyzes and manipulates various function types with sophisticated understanding">Mastery of functions</option>
-                    <option value="works with linear, quadratic, and exponential functions accurately">Strong function skills</option>
-                    <option value="understands basic function concepts but needs practice with transformations">Developing skills</option>
-                    <option value="sometimes struggles with function notation and properties">Needs support</option>
-                    <option value="has difficulty understanding fundamental function concepts">Significant struggles</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Trigonometry</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleTrigonometry">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="trigonometry">
-                    <option value="solves complex trigonometric problems including identities and equations">Excels in trigonometry</option>
-                    <option value="applies trigonometric ratios and functions accurately">Strong trig skills</option>
-                    <option value="understands basic trig concepts but needs practice with applications">Developing skills</option>
-                    <option value="sometimes struggles with trigonometric relationships">Needs reminders</option>
-                    <option value="has difficulty with fundamental trigonometric concepts">Significant difficulties</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Analytic Geometry</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleAnalyticGeometry">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="analyticGeometry">
-                    <option value="analyzes and solves complex problems involving conic sections and vectors">Advanced analytic geometry skills</option>
-                    <option value="works with conic sections and coordinate proofs accurately">Strong analytic skills</option>
-                    <option value="understands basic concepts but needs support with complex problems">Developing skills</option>
-                    <option value="sometimes struggles with analytic geometry concepts">Needs reinforcement</option>
-                    <option value="has difficulty with fundamental analytic geometry">Significant challenges</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Calculus Fundamentals</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleCalculus">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="calculus">
-                    <option value="demonstrates excellent understanding of limits, derivatives, and their applications">Excels in calculus</option>
-                    <option value="solves problems involving rates of change and optimization accurately">Strong calculus skills</option>
-                    <option value="understands basic concepts but needs practice with applications">Developing skills</option>
-                    <option value="sometimes struggles with calculus concepts and notation">Needs support</option>
-                    <option value="has difficulty with fundamental calculus concepts">Significant struggles</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Advanced Statistics</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleAdvancedStats">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="advancedStats">
-                    <option value="analyzes complex statistical data including probability distributions and inferential statistics">Advanced statistical analysis</option>
-                    <option value="works with probability distributions and statistical inference accurately">Strong statistical skills</option>
-                    <option value="understands basic concepts but needs support with complex analysis">Developing understanding</option>
-                    <option value="sometimes struggles with statistical calculations and concepts">Needs reinforcement</option>
-                    <option value="has difficulty with fundamental statistical concepts">Significant challenges</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Discrete Mathematics</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleDiscreteMath">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="discreteMath">
-                    <option value="demonstrates sophisticated understanding of sequences, series, and combinatorics">Excels in discrete math</option>
-                    <option value="solves problems involving sequences, series, and counting principles accurately">Strong discrete math skills</option>
-                    <option value="understands basic concepts but needs practice with complex problems">Developing skills</option>
-                    <option value="sometimes struggles with discrete math concepts">Needs support</option>
-                    <option value="has difficulty with fundamental discrete math concepts">Significant struggles</option>
-                </select>
-            </div>
-            
-            <div class="math-area">
-                <div class="toggle-area">
-                    <h3>Mathematical Modeling</h3>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleModeling">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <select id="modeling">
-                    <option value="creates and analyzes sophisticated mathematical models for real-world situations">Advanced modeling skills</option>
-                    <option value="develops appropriate mathematical models for various scenarios">Strong modeling skills</option>
-                    <option value="understands basic modeling concepts but needs support with complex applications">Developing skills</option>
-                    <option value="sometimes struggles to translate real-world situations into mathematical models">Needs guidance</option>
-                    <option value="has difficulty with fundamental modeling concepts">Significant challenges</option>
-                </select>
             </div>
         </div>
         
         <div class="button-group">
             <button id="generateBtn">Generate Comments</button>
+            <button id="refreshBtn" class="refresh-btn">Refresh All Comments</button>
             <button id="copyFullBtn" class="copy-btn">Copy Full Comment</button>
         </div>
         
@@ -690,29 +728,682 @@
             <div class="comment-box">
                 <label>Behavior Comment:</label>
                 <div id="behaviorComment" class="comment-section"></div>
-                <button class="copy-btn" onclick="copyBehaviorComment()">Copy Behavior</button>
+                <div class="button-row">
+                    <button class="copy-btn" id="copyBehaviorBtn">Copy</button>
+                    <button class="refresh-btn" id="refreshBehaviorBtn">Refresh</button>
+                </div>
             </div>
             
             <div class="comment-box">
                 <label>Work Completion:</label>
                 <div id="workComment" class="comment-section"></div>
-                <button class="copy-btn" onclick="copyWorkComment()">Copy Work</button>
+                <div class="button-row">
+                    <button class="copy-btn" id="copyWorkBtn">Copy</button>
+                    <button class="refresh-btn" id="refreshWorkBtn">Refresh</button>
+                </div>
             </div>
             
             <div class="comment-box">
                 <label>Academic Comments:</label>
                 <div id="additionalComment" class="comment-section"></div>
-                <button class="copy-btn" onclick="copyAdditionalComment()">Copy Academic</button>
+                <div class="button-row">
+                    <button class="copy-btn" id="copyAcademicBtn">Copy</button>
+                    <button class="refresh-btn" id="refreshAcademicBtn">Refresh</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
             const generateBtn = document.getElementById('generateBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
             const copyFullBtn = document.getElementById('copyFullBtn');
             const schoolLevelRadios = document.querySelectorAll('input[name="schoolLevel"]');
+            const toggleMathAreas = document.getElementById('toggleMathAreas');
             
+            // Button elements for individual sections
+            const copyBehaviorBtn = document.getElementById('copyBehaviorBtn');
+            const refreshBehaviorBtn = document.getElementById('refreshBehaviorBtn');
+            const copyWorkBtn = document.getElementById('copyWorkBtn');
+            const refreshWorkBtn = document.getElementById('refreshWorkBtn');
+            const copyAcademicBtn = document.getElementById('copyAcademicBtn');
+            const refreshAcademicBtn = document.getElementById('refreshAcademicBtn');
+            
+            // Comment options organized by level for each category
+            const commentOptions = {
+                participation: {
+                    excellent: [
+                        "actively initiates mathematical discussions and asks insightful questions",
+                        "consistently leads class discussions with thoughtful contributions",
+                        "demonstrates exceptional engagement by posing challenging questions",
+                        "frequently offers innovative solutions during problem-solving activities",
+                        "serves as a role model for class participation with insightful comments"
+                    ],
+                    high: [
+                        "frequently participates in class discussions with valuable contributions",
+                        "regularly shares thoughtful ideas during mathematical explorations",
+                        "offers meaningful input during group work and class discussions",
+                        "engages actively with mathematical concepts during lessons",
+                        "consistently contributes to classroom mathematical discourse"
+                    ],
+                    medium: [
+                        "participates when called upon and offers reasonable responses",
+                        "shares ideas when prompted and demonstrates understanding",
+                        "contributes to discussions when directly engaged by the teacher",
+                        "offers responses that show developing mathematical thinking",
+                        "participates appropriately when invited to share thoughts"
+                    ],
+                    low: [
+                        "rarely volunteers but will answer when directly asked",
+                        "typically only participates when specifically called upon",
+                        "shows reluctance to share mathematical thinking voluntarily",
+                        "needs encouragement to contribute to class discussions",
+                        "responds when prompted but rarely initiates participation"
+                    ],
+                    very_low: [
+                        "avoids participation and seems disengaged during lessons",
+                        "rarely engages with mathematical discussions or activities",
+                        "shows minimal participation even when directly questioned",
+                        "demonstrates little interest in contributing to class discourse",
+                        "needs significant encouragement to participate in lessons"
+                    ]
+                },
+                attitude: {
+                    very_positive: [
+                        "demonstrates exceptional enthusiasm for mathematics and often helps peers understand concepts",
+                        "approaches math with infectious enthusiasm and supports classmates' learning",
+                        "shows genuine passion for mathematics that inspires others",
+                        "maintains an exceptionally positive attitude while assisting peers",
+                        "exhibits both strong mathematical ability and willingness to help others"
+                    ],
+                    positive: [
+                        "shows consistent interest in learning and approaches challenges with determination",
+                        "demonstrates perseverance when working through difficult problems",
+                        "approaches mathematical challenges with a positive mindset",
+                        "maintains good effort and attitude even with complex material",
+                        "shows resilience and persistence in mathematical problem-solving"
+                    ],
+                    neutral: [
+                        "is generally cooperative and respectful during math lessons",
+                        "follows classroom expectations during mathematics instruction",
+                        "demonstrates appropriate behavior during math activities",
+                        "shows willingness to engage with mathematical content",
+                        "participates in math lessons without disruption"
+                    ],
+                    mixed: [
+                        "sometimes appears frustrated with challenging material but tries to persist",
+                        "shows variable reactions to mathematical challenges",
+                        "demonstrates inconsistent attitudes toward difficult concepts",
+                        "occasionally struggles with frustration but makes efforts to continue",
+                        "needs encouragement when facing particularly challenging material"
+                    ],
+                    negative: [
+                        "often displays negative attitudes toward math tasks and concepts",
+                        "frequently expresses frustration with mathematical work",
+                        "shows reluctance to engage with challenging mathematical ideas",
+                        "demonstrates resistance when presented with difficult problems",
+                        "needs significant support to maintain positive math attitude"
+                    ]
+                },
+                readiness: {
+                    excellent: [
+                        "consistently arrives fully prepared with materials and completed assignments, often with extra practice work",
+                        "always comes to class with all necessary materials and goes beyond requirements",
+                        "demonstrates exceptional preparation by completing extra practice voluntarily",
+                        "shows outstanding organization with materials and assignments",
+                        "exceeds expectations by consistently preparing advanced work"
+                    ],
+                    good: [
+                        "usually comes to class with all required materials and completed assignments",
+                        "demonstrates good preparation with materials and homework",
+                        "typically has necessary materials and completed work ready",
+                        "shows consistent readiness for mathematics lessons",
+                        "maintains good habits of coming prepared to class"
+                    ],
+                    fair: [
+                        "sometimes forgets materials or assignments but generally tries to keep up",
+                        "occasionally needs reminders about materials or assignments",
+                        "shows inconsistent preparation but makes efforts to stay current",
+                        "usually attempts to complete work even if occasionally unprepared",
+                        "needs occasional prompts to remember materials or assignments"
+                    ],
+                    poor: [
+                        "frequently comes to class without necessary materials or completed work",
+                        "often lacks required materials or unfinished assignments",
+                        "shows inconsistent preparation for mathematics lessons",
+                        "needs regular reminders about materials and assignments",
+                        "demonstrates poor habits in coming prepared to class"
+                    ],
+                    very_poor: [
+                        "rarely has required materials and assignments are typically incomplete",
+                        "almost always comes to class unprepared with missing work",
+                        "shows little effort in preparing for mathematics lessons",
+                        "consistently lacks necessary materials and completed assignments",
+                        "demonstrates very poor organizational skills for math class"
+                    ]
+                },
+                classwork: {
+                    excellent: [
+                        "completes all classwork with exceptional accuracy and attention to detail, often going beyond requirements",
+                        "produces outstanding classwork that frequently exceeds expectations",
+                        "demonstrates meticulous work habits during class activities",
+                        "consistently completes classwork with precision and extra effort",
+                        "shows exceptional dedication to quality work during class time"
+                    ],
+                    good: [
+                        "consistently completes classwork thoroughly and meets all requirements",
+                        "produces quality work during class that meets expectations",
+                        "demonstrates good effort and completion of in-class assignments",
+                        "shows consistent work habits during mathematics activities",
+                        "completes classwork reliably with good attention to detail"
+                    ],
+                    fair: [
+                        "usually finishes classwork but may need occasional reminders",
+                        "completes most classwork with some prompting",
+                        "shows reasonable effort but sometimes needs redirection",
+                        "produces adequate work during class with some inconsistency",
+                        "demonstrates developing work habits during class activities"
+                    ],
+                    poor: [
+                        "often has incomplete classwork or rushes through tasks",
+                        "frequently submits unfinished or hastily completed work",
+                        "shows inconsistent effort during classwork time",
+                        "needs frequent reminders to stay on task during activities",
+                        "demonstrates poor work habits during mathematics lessons"
+                    ],
+                    very_poor: [
+                        "rarely completes classwork assignments during allotted time",
+                        "almost never finishes in-class assignments without intervention",
+                        "shows minimal effort during classwork activities",
+                        "consistently fails to complete work during class time",
+                        "demonstrates very poor work habits during mathematics lessons"
+                    ]
+                },
+                homework: {
+                    excellent: [
+                        "consistently completes homework accurately and on time, often with extra practice problems",
+                        "always submits exemplary homework that frequently includes additional practice",
+                        "demonstrates outstanding commitment to homework assignments",
+                        "goes beyond requirements with consistently excellent homework",
+                        "shows exceptional dedication to mathematics practice at home"
+                    ],
+                    good: [
+                        "usually submits homework on time with good effort and reasonable accuracy",
+                        "demonstrates consistent completion of homework assignments",
+                        "shows good responsibility in completing mathematics homework",
+                        "typically submits quality work that meets expectations",
+                        "maintains good homework habits throughout the term"
+                    ],
+                    fair: [
+                        "sometimes completes homework but quality and timeliness vary",
+                        "shows inconsistent homework completion and quality",
+                        "demonstrates developing homework habits with some inconsistency",
+                        "completes homework assignments with variable effort",
+                        "needs occasional reminders about homework expectations"
+                    ],
+                    poor: [
+                        "frequently misses homework deadlines or submits incomplete work",
+                        "often fails to complete homework assignments satisfactorily",
+                        "shows poor homework habits with frequent missing work",
+                        "demonstrates inconsistent effort on mathematics homework",
+                        "needs regular intervention regarding homework completion"
+                    ],
+                    very_poor: [
+                        "rarely submits homework assignments or submits work that shows minimal effort",
+                        "almost never completes homework without significant prompting",
+                        "shows very little effort on mathematics homework",
+                        "demonstrates extremely poor homework habits",
+                        "consistently fails to meet homework expectations"
+                    ]
+                },
+                generalUnderstanding: {
+                    mastery: [
+                        "demonstrates comprehensive understanding of all math concepts covered this term",
+                        "shows complete mastery of all mathematical concepts presented",
+                        "exhibits thorough understanding of every topic we've studied",
+                        "has achieved excellent comprehension of all course material",
+                        "displays complete command of all mathematical concepts"
+                    ],
+                    strong: [
+                        "shows strong understanding of most concepts with minor areas for growth",
+                        "demonstrates solid grasp of nearly all mathematical concepts",
+                        "exhibits good comprehension with only occasional minor confusion",
+                        "understands most material well with isolated areas needing review",
+                        "has developed strong mathematical understanding overall"
+                    ],
+                    developing: [
+                        "understands basic concepts but needs reinforcement in some areas",
+                        "demonstrates developing understanding with some concepts needing support",
+                        "shows partial comprehension with several topics requiring review",
+                        "grasps fundamental ideas but needs help with more complex applications",
+                        "is building mathematical understanding with some areas needing work"
+                    ],
+                    inconsistent: [
+                        "shows partial understanding with several concepts needing review",
+                        "demonstrates inconsistent comprehension of mathematical concepts",
+                        "understands some topics well while others remain challenging",
+                        "shows variable understanding across different mathematical areas",
+                        "has uneven comprehension that needs targeted support"
+                    ],
+                    significant_gaps: [
+                        "struggles with fundamental understanding of most concepts",
+                        "has significant gaps in mathematical understanding",
+                        "finds most concepts challenging and needs substantial support",
+                        "demonstrates limited comprehension of core mathematical ideas",
+                        "requires considerable help to understand fundamental concepts"
+                    ]
+                },
+                numberSystem: {
+                    excels: [
+                        "demonstrates exceptional understanding of number systems, including operations with integers, fractions, and decimals",
+                        "shows complete mastery of all number system concepts and operations",
+                        "excels in working with integers, fractions, and decimals in complex problems",
+                        "demonstrates sophisticated understanding of number relationships",
+                        "performs advanced operations with number systems effortlessly"
+                    ],
+                    strong: [
+                        "shows strong skills working with various number forms and operations",
+                        "demonstrates solid understanding of number system concepts",
+                        "performs well with operations involving integers, fractions, and decimals",
+                        "shows good number sense and computational skills",
+                        "understands number system operations with minor areas for refinement"
+                    ],
+                    developing: [
+                        "understands basic number concepts but needs practice with more complex operations",
+                        "demonstrates developing skills with number system operations",
+                        "shows partial understanding of integers, fractions, and decimals",
+                        "is building competency with number system concepts",
+                        "needs additional practice with more challenging number operations"
+                    ],
+                    needs_reinforcement: [
+                        "sometimes struggles with number operations and place value concepts",
+                        "needs reinforcement with fundamental number system operations",
+                        "shows inconsistent understanding of number concepts",
+                        "requires additional support with integers, fractions, and decimals",
+                        "needs regular practice to strengthen number system skills"
+                    ],
+                    significant_struggles: [
+                        "has difficulty with fundamental number concepts and operations",
+                        "struggles significantly with number system understanding",
+                        "finds basic operations with integers, fractions, and decimals challenging",
+                        "requires substantial support with number concepts",
+                        "has major gaps in number system comprehension"
+                    ]
+                },
+                ratioRate: {
+                    mastery: [
+                        "exhibits mastery in solving complex ratio, rate, and unit rate problems with creative approaches",
+                        "solves multi-step ratio and rate problems with innovative strategies",
+                        "demonstrates complete understanding of proportional relationships",
+                        "applies ratio concepts to solve sophisticated real-world problems",
+                        "shows exceptional skill in analyzing and comparing quantities"
+                    ],
+                    strong: [
+                        "solves most ratio and rate problems accurately and efficiently",
+                        "demonstrates strong proportional reasoning skills",
+                        "applies ratio concepts effectively to solve problems",
+                        "shows good understanding of rate and unit rate concepts",
+                        "works well with proportional relationships in various contexts"
+                    ],
+                    developing: [
+                        "understands basic ratio concepts but needs support with more complex applications",
+                        "is developing skills in working with ratios and rates",
+                        "shows partial understanding of proportional relationships",
+                        "needs practice with more challenging ratio problems",
+                        "is building competency with rate and unit rate concepts"
+                    ],
+                    needs_practice: [
+                        "sometimes confuses ratio concepts and needs reminders about procedures",
+                        "requires additional practice with ratio and rate problems",
+                        "needs support in setting up and solving proportion problems",
+                        "shows inconsistent understanding of proportional relationships",
+                        "benefits from guided practice with ratio applications"
+                    ],
+                    significant_difficulties: [
+                        "struggles with fundamental ratio and rate concepts",
+                        "has difficulty understanding proportional relationships",
+                        "requires significant support with basic ratio problems",
+                        "finds it challenging to compare quantities using ratios",
+                        "needs extensive practice with fundamental rate concepts"
+                    ]
+                },
+                proportional: {
+                    advanced: [
+                        "analyzes and solves proportional relationship problems with sophisticated reasoning and multiple strategies",
+                        "demonstrates exceptional skill in recognizing and applying proportional relationships",
+                        "solves complex proportion problems using multiple methods",
+                        "shows deep understanding of direct and inverse variation",
+                        "applies proportional reasoning to solve advanced problems"
+                    ],
+                    solid: [
+                        "solves proportional relationship problems accurately using appropriate methods",
+                        "demonstrates good understanding of proportional relationships",
+                        "applies proportion concepts correctly to solve problems",
+                        "recognizes and uses proportional relationships effectively",
+                        "shows consistent skill in working with proportions"
+                    ],
+                    basic: [
+                        "understands direct proportion but needs support with inverse relationships",
+                        "demonstrates basic comprehension of proportional relationships",
+                        "solves simple proportion problems with some support",
+                        "is developing understanding of proportional reasoning",
+                        "needs practice with more complex proportion applications"
+                    ],
+                    needs_reinforcement: [
+                        "sometimes struggles to recognize and solve proportion problems",
+                        "needs reinforcement of fundamental proportion concepts",
+                        "requires reminders about setting up and solving proportions",
+                        "shows inconsistent understanding of proportional relationships",
+                        "benefits from additional practice with proportion problems"
+                    ],
+                    significant_challenges: [
+                        "has difficulty understanding proportional relationships",
+                        "struggles significantly with proportion concepts",
+                        "requires substantial support with basic proportional reasoning",
+                        "finds it challenging to recognize proportional situations",
+                        "needs extensive practice with fundamental proportion concepts"
+                    ]
+                },
+                percent: {
+                    excels: [
+                        "solves complex percent problems including multi-step applications and real-world scenarios",
+                        "demonstrates exceptional skill in calculating and applying percentages",
+                        "solves sophisticated percent problems with multiple steps",
+                        "applies percent concepts creatively to solve challenging problems",
+                        "shows deep understanding of percent increase and decrease"
+                    ],
+                    strong: [
+                        "calculates percentages accurately and solves basic application problems",
+                        "demonstrates strong skills in working with percentages",
+                        "solves percent problems with good accuracy",
+                        "applies percent concepts correctly in various contexts",
+                        "shows consistent understanding of percent calculations"
+                    ],
+                    developing: [
+                        "understands basic percent concepts but needs practice with applications",
+                        "is developing skills in calculating and applying percentages",
+                        "solves simple percent problems with some support",
+                        "demonstrates partial understanding of percent concepts",
+                        "needs practice with more complex percent applications"
+                    ],
+                    needs_reminders: [
+                        "sometimes confuses percent concepts and calculations",
+                        "needs reminders about percent procedures and formulas",
+                        "requires support with setting up percent problems",
+                        "shows inconsistent understanding of percent applications",
+                        "benefits from additional practice with percent calculations"
+                    ],
+                    significant_difficulties: [
+                        "struggles with fundamental percent concepts",
+                        "has difficulty performing basic percent calculations",
+                        "requires substantial support with simple percent problems",
+                        "finds it challenging to apply percent concepts",
+                        "needs extensive practice with fundamental percent skills"
+                    ]
+                },
+                algebra: {
+                    strong: [
+                        "demonstrates strong algebraic reasoning, solving equations and inequalities with understanding",
+                        "shows excellent problem-solving skills in algebraic contexts",
+                        "solves complex algebraic problems with clear reasoning",
+                        "demonstrates sophisticated understanding of algebraic concepts",
+                        "applies algebraic thinking creatively to solve problems"
+                    ],
+                    good: [
+                        "solves linear equations accurately and explains reasoning",
+                        "demonstrates good understanding of algebraic concepts",
+                        "shows consistent skill in solving algebraic equations",
+                        "applies algebraic methods correctly to solve problems",
+                        "works well with variables and algebraic expressions"
+                    ],
+                    developing: [
+                        "understands basic algebraic concepts but needs support with more complex problems",
+                        "is developing skills in solving algebraic equations",
+                        "shows partial understanding of algebraic reasoning",
+                        "needs practice with more challenging algebraic problems",
+                        "is building competency with algebraic concepts"
+                    ],
+                    needs_reinforcement: [
+                        "sometimes struggles with algebraic notation and solving equations",
+                        "needs reinforcement of fundamental algebraic concepts",
+                        "requires reminders about algebraic procedures and steps",
+                        "shows inconsistent understanding of algebraic methods",
+                        "benefits from additional practice with algebraic problems"
+                    ],
+                    significant_challenges: [
+                        "has difficulty with fundamental algebraic concepts",
+                        "struggles significantly with solving basic equations",
+                        "requires substantial support with algebraic reasoning",
+                        "finds it challenging to work with variables and expressions",
+                        "needs extensive practice with fundamental algebra skills"
+                    ]
+                },
+                geometry: {
+                    excels: [
+                        "demonstrates excellent understanding of geometric concepts including area, volume, and properties of shapes",
+                        "shows complete mastery of all geometric concepts covered",
+                        "solves complex geometry problems with sophisticated reasoning",
+                        "applies geometric principles creatively to solve problems",
+                        "demonstrates deep understanding of spatial relationships"
+                    ],
+                    strong: [
+                        "calculates area and volume accurately and understands shape properties",
+                        "demonstrates strong skills in geometric reasoning",
+                        "solves geometry problems with good accuracy",
+                        "applies geometric formulas correctly in various contexts",
+                        "shows consistent understanding of geometric concepts"
+                    ],
+                    developing: [
+                        "understands basic geometric concepts but needs practice with applications",
+                        "is developing skills in working with geometric shapes",
+                        "shows partial understanding of geometric properties",
+                        "needs practice with more complex geometry problems",
+                        "is building competency with geometric reasoning"
+                    ],
+                    needs_support: [
+                        "sometimes struggles with geometric formulas and concepts",
+                        "needs support with fundamental geometry problems",
+                        "requires reminders about geometric properties and formulas",
+                        "shows inconsistent understanding of geometric applications",
+                        "benefits from additional practice with geometry concepts"
+                    ],
+                    significant_struggles: [
+                        "has difficulty with fundamental geometric concepts",
+                        "struggles significantly with basic shape properties",
+                        "requires substantial support with simple geometry problems",
+                        "finds it challenging to apply geometric formulas",
+                        "needs extensive practice with fundamental geometry skills"
+                    ]
+                },
+                geometryConstructions: {
+                    excels: [
+                        "demonstrates precision and understanding in all geometric constructions using appropriate tools",
+                        "shows exceptional skill in creating accurate geometric constructions",
+                        "performs complex constructions with meticulous precision",
+                        "demonstrates sophisticated understanding of construction techniques",
+                        "creates geometric constructions that exceed expectations"
+                    ],
+                    strong: [
+                        "completes geometric constructions accurately with proper tool use",
+                        "demonstrates good skill in geometric constructions",
+                        "shows consistent accuracy in creating geometric figures",
+                        "applies construction techniques correctly",
+                        "works well with compass and straightedge constructions"
+                    ],
+                    developing: [
+                        "understands basic constructions but needs practice with more complex ones",
+                        "is developing skills in geometric constructions",
+                        "shows partial understanding of construction techniques",
+                        "needs practice with more challenging constructions",
+                        "is building competency with construction tools and methods"
+                    ],
+                    needs_guidance: [
+                        "sometimes struggles with proper tool use and construction techniques",
+                        "needs guidance with fundamental geometric constructions",
+                        "requires reminders about construction steps and procedures",
+                        "shows inconsistent accuracy in creating geometric figures",
+                        "benefits from additional practice with constructions"
+                    ],
+                    significant_challenges: [
+                        "has difficulty completing basic geometric constructions",
+                        "struggles significantly with construction tools and techniques",
+                        "requires substantial support with simple constructions",
+                        "finds it challenging to create accurate geometric figures",
+                        "needs extensive practice with fundamental construction skills"
+                    ]
+                },
+                coordinate: {
+                    strong: [
+                        "graphs linear equations accurately and interprets graphs with sophisticated understanding",
+                        "demonstrates excellent skill in coordinate graphing and analysis",
+                        "solves complex coordinate geometry problems with clear reasoning",
+                        "interprets graphs with deep understanding of relationships",
+                        "applies coordinate geometry creatively to solve problems"
+                    ],
+                    good: [
+                        "plots points and graphs linear equations correctly",
+                        "demonstrates good understanding of coordinate graphing",
+                        "shows consistent skill in working with coordinate planes",
+                        "interprets graphs with reasonable accuracy",
+                        "applies coordinate geometry methods correctly"
+                    ],
+                    developing: [
+                        "understands basic coordinate graphing but needs practice with analysis",
+                        "is developing skills in coordinate geometry",
+                        "shows partial understanding of graphing concepts",
+                        "needs practice with more complex coordinate problems",
+                        "is building competency with graphing techniques"
+                    ],
+                    needs_support: [
+                        "sometimes struggles with plotting points and graphing equations",
+                        "needs support with fundamental coordinate graphing",
+                        "requires reminders about graphing procedures",
+                        "shows inconsistent understanding of coordinate concepts",
+                        "benefits from additional practice with graphing"
+                    ],
+                    significant_struggles: [
+                        "has difficulty understanding the coordinate plane",
+                        "struggles significantly with basic graphing skills",
+                        "requires substantial support with simple coordinate problems",
+                        "finds it challenging to plot points accurately",
+                        "needs extensive practice with fundamental graphing concepts"
+                    ]
+                },
+                statistics: {
+                    strong: [
+                        "analyzes and interprets statistical data with insightful observations",
+                        "demonstrates excellent skill in statistical reasoning",
+                        "interprets data displays with sophisticated understanding",
+                        "makes insightful conclusions from statistical analyses",
+                        "applies statistical concepts creatively to solve problems"
+                    ],
+                    good: [
+                        "calculates and interprets basic statistics accurately",
+                        "demonstrates good understanding of statistical concepts",
+                        "shows consistent skill in working with data",
+                        "interprets simple statistics with reasonable accuracy",
+                        "applies statistical methods correctly"
+                    ],
+                    developing: [
+                        "understands basic statistics but needs support with interpretation",
+                        "is developing skills in statistical analysis",
+                        "shows partial understanding of data interpretation",
+                        "needs practice with more complex statistical problems",
+                        "is building competency with statistical reasoning"
+                    ],
+                    needs_reinforcement: [
+                        "sometimes struggles with statistical calculations and concepts",
+                        "needs reinforcement of fundamental statistical ideas",
+                        "requires reminders about statistical procedures",
+                        "shows inconsistent understanding of data analysis",
+                        "benefits from additional practice with statistics"
+                    ],
+                    significant_challenges: [
+                        "has difficulty with fundamental statistical concepts",
+                        "struggles significantly with basic data interpretation",
+                        "requires substantial support with simple statistical problems",
+                        "finds it challenging to analyze and interpret data",
+                        "needs extensive practice with fundamental statistics skills"
+                    ]
+                },
+                probability: {
+                    strong: [
+                        "solves probability problems accurately and explains reasoning clearly",
+                        "demonstrates excellent skill in probabilistic reasoning",
+                        "solves complex probability problems with clear understanding",
+                        "applies probability concepts creatively to solve problems",
+                        "shows deep understanding of chance and uncertainty"
+                    ],
+                    good: [
+                        "calculates probabilities correctly for basic scenarios",
+                        "demonstrates good understanding of probability concepts",
+                        "shows consistent skill in solving probability problems",
+                        "applies probability methods correctly",
+                        "works well with simple probability calculations"
+                    ],
+                    developing: [
+                        "understands basic probability concepts but needs practice with applications",
+                        "is developing skills in probabilistic reasoning",
+                        "shows partial understanding of chance and uncertainty",
+                        "needs practice with more complex probability problems",
+                        "is building competency with probability concepts"
+                    ],
+                    needs_reminders: [
+                        "sometimes confuses probability concepts and calculations",
+                        "needs reminders about probability procedures",
+                        "requires support with setting up probability problems",
+                        "shows inconsistent understanding of probability applications",
+                        "benefits from additional practice with probability"
+                    ],
+                    significant_difficulties: [
+                        "struggles with fundamental probability concepts",
+                        "has difficulty performing basic probability calculations",
+                        "requires substantial support with simple probability problems",
+                        "finds it challenging to apply probability concepts",
+                        "needs extensive practice with fundamental probability skills"
+                    ]
+                },
+                problemSolving: {
+                    strong: [
+                        "approaches multi-step problems with effective strategies and persists through challenges",
+                        "demonstrates excellent problem-solving skills in mathematical contexts",
+                        "solves complex problems using multiple strategies",
+                        "shows resilience and creativity when solving challenging problems",
+                        "applies problem-solving techniques effectively"
+                    ],
+                    good: [
+                        "solves most problems accurately using appropriate methods",
+                        "demonstrates good problem-solving skills",
+                        "shows consistent ability to work through problems",
+                        "applies problem-solving strategies correctly",
+                        "works well with multi-step problems"
+                    ],
+                    developing: [
+                        "solves basic problems but needs support with more complex applications",
+                        "is developing problem-solving skills",
+                        "shows partial understanding of problem-solving strategies",
+                        "needs practice with more challenging problems",
+                        "is building competency with mathematical problem-solving"
+                    ],
+                    needs_guidance: [
+                        "sometimes struggles to apply mathematical concepts to problem situations",
+                        "needs guidance with problem-solving approaches",
+                        "requires support in breaking down problems into steps",
+                        "shows inconsistent application of problem-solving strategies",
+                        "benefits from additional practice with problem-solving"
+                    ],
+                    major_challenges: [
+                        "has difficulty applying math concepts to solve problems",
+                        "struggles significantly with basic problem-solving",
+                        "requires substantial support with simple problems",
+                        "finds it challenging to approach mathematical problems",
+                        "needs extensive practice with fundamental problem-solving skills"
+                    ]
+                }
+            };
+
             // Handle school level change
             schoolLevelRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
@@ -726,85 +1417,125 @@
                 });
             });
             
+            // Handle math areas toggle
+            document.getElementById('toggleMathAreas').addEventListener('change', function() {
+                document.getElementById('mathAreasContainer').style.display = this.checked ? 'block' : 'none';
+            });
+            
+            function getRandomComment(category, level) {
+                const options = commentOptions[category]?.[level];
+                if (options && options.length > 0) {
+                    return options[Math.floor(Math.random() * options.length)];
+                }
+                return "";
+            }
+            
             function generateComments() {
                 const name = document.getElementById('studentName').value || '[Student]';
                 const pronoun = document.querySelector('input[name="pronoun"]:checked').value;
-                const participation = document.getElementById('participation').value;
-                const attitude = document.getElementById('attitude').value;
-                const readiness = document.getElementById('readiness').value;
-                const classwork = document.getElementById('classwork').value;
-                const homework = document.getElementById('homework').value;
+                const participationLevel = document.getElementById('participation').value;
+                const attitudeLevel = document.getElementById('attitude').value;
+                const readinessLevel = document.getElementById('readiness').value;
+                const classworkLevel = document.getElementById('classwork').value;
+                const homeworkLevel = document.getElementById('homework').value;
                 const schoolLevel = document.querySelector('input[name="schoolLevel"]:checked').value;
+                
+                // Get random comments for each selected level
+                const participation = getRandomComment('participation', participationLevel);
+                const attitude = getRandomComment('attitude', attitudeLevel);
+                const readiness = getRandomComment('readiness', readinessLevel);
+                const classwork = getRandomComment('classwork', classworkLevel);
+                const homework = getRandomComment('homework', homeworkLevel);
                 
                 // Generate math area comments
                 let mathAreasComments = "";
                 
                 // General Understanding
-                if (document.getElementById('toggleGeneral').checked) {
-                    mathAreasComments += `Overall, ${pronoun.toLowerCase()} ${document.getElementById('generalUnderstanding').value}.\n\n`;
+                if (document.getElementById('toggleMathAreas').checked && document.getElementById('toggleGeneral').checked) {
+                    const level = document.getElementById('generalUnderstanding').value;
+                    mathAreasComments += `Overall, ${pronoun.toLowerCase()} ${getRandomComment('generalUnderstanding', level)}.\n\n`;
                 }
                 
                 // Middle School Areas
-                if (schoolLevel === 'middle') {
+                if (schoolLevel === 'middle' && document.getElementById('toggleMathAreas').checked) {
                     if (document.getElementById('toggleNumber').checked) {
-                        mathAreasComments += `In number systems, ${pronoun.toLowerCase()} ${document.getElementById('numberSystem').value}.\n`;
+                        const level = document.getElementById('numberSystem').value;
+                        mathAreasComments += `In number systems, ${pronoun.toLowerCase()} ${getRandomComment('numberSystem', level)}.\n`;
                     }
                     if (document.getElementById('toggleRatio').checked) {
-                        mathAreasComments += `Regarding ratios and rates, ${pronoun.toLowerCase()} ${document.getElementById('ratioRate').value}.\n`;
+                        const level = document.getElementById('ratioRate').value;
+                        mathAreasComments += `Regarding ratios and rates, ${pronoun.toLowerCase()} ${getRandomComment('ratioRate', level)}.\n`;
                     }
                     if (document.getElementById('toggleProportional').checked) {
-                        mathAreasComments += `With proportional relationships, ${pronoun.toLowerCase()} ${document.getElementById('proportional').value}.\n`;
+                        const level = document.getElementById('proportional').value;
+                        mathAreasComments += `With proportional relationships, ${pronoun.toLowerCase()} ${getRandomComment('proportional', level)}.\n`;
                     }
                     if (document.getElementById('togglePercent').checked) {
-                        mathAreasComments += `In working with percentages, ${pronoun.toLowerCase()} ${document.getElementById('percent').value}.\n`;
+                        const level = document.getElementById('percent').value;
+                        mathAreasComments += `In working with percentages, ${pronoun.toLowerCase()} ${getRandomComment('percent', level)}.\n`;
                     }
                     if (document.getElementById('toggleAlgebra').checked) {
-                        mathAreasComments += `For algebraic concepts, ${pronoun.toLowerCase()} ${document.getElementById('algebra').value}.\n`;
+                        const level = document.getElementById('algebra').value;
+                        mathAreasComments += `For algebraic concepts, ${pronoun.toLowerCase()} ${getRandomComment('algebra', level)}.\n`;
                     }
                     if (document.getElementById('toggleGeometry').checked) {
-                        mathAreasComments += `In geometry, ${pronoun.toLowerCase()} ${document.getElementById('geometry').value}.\n`;
+                        const level = document.getElementById('geometry').value;
+                        mathAreasComments += `In geometry, ${pronoun.toLowerCase()} ${getRandomComment('geometry', level)}.\n`;
                     }
                     if (document.getElementById('toggleGeometryConstructions').checked) {
-                        mathAreasComments += `With geometric constructions, ${pronoun.toLowerCase()} ${document.getElementById('geometryConstructions').value}.\n`;
+                        const level = document.getElementById('geometryConstructions').value;
+                        mathAreasComments += `With geometric constructions, ${pronoun.toLowerCase()} ${getRandomComment('geometryConstructions', level)}.\n`;
                     }
                     if (document.getElementById('toggleCoordinate').checked) {
-                        mathAreasComments += `In coordinate geometry, ${pronoun.toLowerCase()} ${document.getElementById('coordinate').value}.\n`;
+                        const level = document.getElementById('coordinate').value;
+                        mathAreasComments += `In coordinate geometry, ${pronoun.toLowerCase()} ${getRandomComment('coordinate', level)}.\n`;
                     }
                     if (document.getElementById('toggleStats').checked) {
-                        mathAreasComments += `Regarding statistics, ${pronoun.toLowerCase()} ${document.getElementById('statistics').value}.\n`;
+                        const level = document.getElementById('statistics').value;
+                        mathAreasComments += `Regarding statistics, ${pronoun.toLowerCase()} ${getRandomComment('statistics', level)}.\n`;
                     }
                     if (document.getElementById('toggleProbability').checked) {
-                        mathAreasComments += `With probability, ${pronoun.toLowerCase()} ${document.getElementById('probability').value}.\n`;
+                        const level = document.getElementById('probability').value;
+                        mathAreasComments += `With probability, ${pronoun.toLowerCase()} ${getRandomComment('probability', level)}.\n`;
                     }
                     if (document.getElementById('toggleProblemSolving').checked) {
-                        mathAreasComments += `In problem solving and applications, ${pronoun.toLowerCase()} ${document.getElementById('problemSolving').value}.\n`;
+                        const level = document.getElementById('problemSolving').value;
+                        mathAreasComments += `In problem solving and applications, ${pronoun.toLowerCase()} ${getRandomComment('problemSolving', level)}.\n`;
                     }
                 }
                 // High School Areas
-                else {
+                else if (document.getElementById('toggleMathAreas').checked) {
                     if (document.getElementById('toggleAdvancedAlgebra').checked) {
-                        mathAreasComments += `In advanced algebra, ${pronoun.toLowerCase()} ${document.getElementById('advancedAlgebra').value}.\n`;
+                        const level = document.getElementById('advancedAlgebra').value;
+                        mathAreasComments += `In advanced algebra, ${pronoun.toLowerCase()} ${getRandomComment('advancedAlgebra', level)}.\n`;
                     }
                     if (document.getElementById('toggleFunctions').checked) {
-                        mathAreasComments += `Regarding functions, ${pronoun.toLowerCase()} ${document.getElementById('functions').value}.\n`;
+                        const level = document.getElementById('functions').value;
+                        mathAreasComments += `Regarding functions, ${pronoun.toLowerCase()} ${getRandomComment('functions', level)}.\n`;
                     }
                     if (document.getElementById('toggleTrigonometry').checked) {
-                        mathAreasComments += `In trigonometry, ${pronoun.toLowerCase()} ${document.getElementById('trigonometry').value}.\n`;
+                        const level = document.getElementById('trigonometry').value;
+                        mathAreasComments += `In trigonometry, ${pronoun.toLowerCase()} ${getRandomComment('trigonometry', level)}.\n`;
                     }
                     if (document.getElementById('toggleAnalyticGeometry').checked) {
-                        mathAreasComments += `With analytic geometry, ${pronoun.toLowerCase()} ${document.getElementById('analyticGeometry').value}.\n`;
+                        const level = document.getElementById('analyticGeometry').value;
+                        mathAreasComments += `With analytic geometry, ${pronoun.toLowerCase()} ${getRandomComment('analyticGeometry', level)}.\n`;
                     }
                     if (document.getElementById('toggleCalculus').checked) {
-                        mathAreasComments += `For calculus fundamentals, ${pronoun.toLowerCase()} ${document.getElementById('calculus').value}.\n`;
+                        const level = document.getElementById('calculus').value;
+                        mathAreasComments += `For calculus fundamentals, ${pronoun.toLowerCase()} ${getRandomComment('calculus', level)}.\n`;
                     }
                     if (document.getElementById('toggleAdvancedStats').checked) {
-                        mathAreasComments += `In advanced statistics, ${pronoun.toLowerCase()} ${document.getElementById('advancedStats').value}.\n`;
+                        const level = document.getElementById('advancedStats').value;
+                        mathAreasComments += `In advanced statistics, ${pronoun.toLowerCase()} ${getRandomComment('advancedStats', level)}.\n`;
                     }
                     if (document.getElementById('toggleDiscreteMath').checked) {
-                        mathAreasComments += `Regarding discrete mathematics, ${pronoun.toLowerCase()} ${document.getElementById('discreteMath').value}.\n`;
+                        const level = document.getElementById('discreteMath').value;
+                        mathAreasComments += `Regarding discrete mathematics, ${pronoun.toLowerCase()} ${getRandomComment('discreteMath', level)}.\n`;
                     }
                     if (document.getElementById('toggleModeling').checked) {
-                        mathAreasComments += `With mathematical modeling, ${pronoun.toLowerCase()} ${document.getElementById('modeling').value}.\n`;
+                        const level = document.getElementById('modeling').value;
+                        mathAreasComments += `With mathematical modeling, ${pronoun.toLowerCase()} ${getRandomComment('modeling', level)}.\n`;
                     }
                 }
                 
@@ -815,14 +1546,164 @@
                 let workComment = `${pronoun} ${classwork}.\n`;
                 workComment += `For homework, ${pronoun.toLowerCase()} ${homework}.`;
                 
-                let additionalComment = mathAreasComments;
+                let additionalComment = mathAreasComments || "No specific academic comments selected.";
                 
-                let fullComment = `${behaviorComment}\n\n${workComment}\n\n${additionalComment}`;
+                // Ensure academic comments are last in full comment
+                let fullComment = `${behaviorComment}\n\n${workComment}`;
+                if (additionalComment !== "No specific academic comments selected.") {
+                    fullComment += `\n\n${additionalComment}`;
+                }
                 
                 // Update the DOM
                 document.getElementById('behaviorComment').textContent = behaviorComment;
                 document.getElementById('workComment').textContent = workComment;
                 document.getElementById('additionalComment').textContent = additionalComment;
+                document.getElementById('fullComment').textContent = fullComment;
+            }
+            
+            function refreshBehaviorComment() {
+                const name = document.getElementById('studentName').value || '[Student]';
+                const pronoun = document.querySelector('input[name="pronoun"]:checked').value;
+                const participationLevel = document.getElementById('participation').value;
+                const attitudeLevel = document.getElementById('attitude').value;
+                const readinessLevel = document.getElementById('readiness').value;
+                
+                const participation = getRandomComment('participation', participationLevel);
+                const attitude = getRandomComment('attitude', attitudeLevel);
+                const readiness = getRandomComment('readiness', readinessLevel);
+                
+                let behaviorComment = `${name} ${participation}.\n`;
+                behaviorComment += `${pronoun} ${attitude} and ${readiness}.`;
+                
+                document.getElementById('behaviorComment').textContent = behaviorComment;
+                updateFullComment();
+            }
+            
+            function refreshWorkComment() {
+                const pronoun = document.querySelector('input[name="pronoun"]:checked').value;
+                const classworkLevel = document.getElementById('classwork').value;
+                const homeworkLevel = document.getElementById('homework').value;
+                
+                const classwork = getRandomComment('classwork', classworkLevel);
+                const homework = getRandomComment('homework', homeworkLevel);
+                
+                let workComment = `${pronoun} ${classwork}.\n`;
+                workComment += `For homework, ${pronoun.toLowerCase()} ${homework}.`;
+                
+                document.getElementById('workComment').textContent = workComment;
+                updateFullComment();
+            }
+            
+            function refreshAcademicComment() {
+                const pronoun = document.querySelector('input[name="pronoun"]:checked').value;
+                const schoolLevel = document.querySelector('input[name="schoolLevel"]:checked').value;
+                
+                // Generate math area comments
+                let mathAreasComments = "";
+                
+                // General Understanding
+                if (document.getElementById('toggleMathAreas').checked && document.getElementById('toggleGeneral').checked) {
+                    const level = document.getElementById('generalUnderstanding').value;
+                    mathAreasComments += `Overall, ${pronoun.toLowerCase()} ${getRandomComment('generalUnderstanding', level)}.\n\n`;
+                }
+                
+                // Middle School Areas
+                if (schoolLevel === 'middle' && document.getElementById('toggleMathAreas').checked) {
+                    if (document.getElementById('toggleNumber').checked) {
+                        const level = document.getElementById('numberSystem').value;
+                        mathAreasComments += `In number systems, ${pronoun.toLowerCase()} ${getRandomComment('numberSystem', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleRatio').checked) {
+                        const level = document.getElementById('ratioRate').value;
+                        mathAreasComments += `Regarding ratios and rates, ${pronoun.toLowerCase()} ${getRandomComment('ratioRate', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleProportional').checked) {
+                        const level = document.getElementById('proportional').value;
+                        mathAreasComments += `With proportional relationships, ${pronoun.toLowerCase()} ${getRandomComment('proportional', level)}.\n`;
+                    }
+                    if (document.getElementById('togglePercent').checked) {
+                        const level = document.getElementById('percent').value;
+                        mathAreasComments += `In working with percentages, ${pronoun.toLowerCase()} ${getRandomComment('percent', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleAlgebra').checked) {
+                        const level = document.getElementById('algebra').value;
+                        mathAreasComments += `For algebraic concepts, ${pronoun.toLowerCase()} ${getRandomComment('algebra', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleGeometry').checked) {
+                        const level = document.getElementById('geometry').value;
+                        mathAreasComments += `In geometry, ${pronoun.toLowerCase()} ${getRandomComment('geometry', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleGeometryConstructions').checked) {
+                        const level = document.getElementById('geometryConstructions').value;
+                        mathAreasComments += `With geometric constructions, ${pronoun.toLowerCase()} ${getRandomComment('geometryConstructions', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleCoordinate').checked) {
+                        const level = document.getElementById('coordinate').value;
+                        mathAreasComments += `In coordinate geometry, ${pronoun.toLowerCase()} ${getRandomComment('coordinate', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleStats').checked) {
+                        const level = document.getElementById('statistics').value;
+                        mathAreasComments += `Regarding statistics, ${pronoun.toLowerCase()} ${getRandomComment('statistics', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleProbability').checked) {
+                        const level = document.getElementById('probability').value;
+                        mathAreasComments += `With probability, ${pronoun.toLowerCase()} ${getRandomComment('probability', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleProblemSolving').checked) {
+                        const level = document.getElementById('problemSolving').value;
+                        mathAreasComments += `In problem solving and applications, ${pronoun.toLowerCase()} ${getRandomComment('problemSolving', level)}.\n`;
+                    }
+                }
+                // High School Areas
+                else if (document.getElementById('toggleMathAreas').checked) {
+                    if (document.getElementById('toggleAdvancedAlgebra').checked) {
+                        const level = document.getElementById('advancedAlgebra').value;
+                        mathAreasComments += `In advanced algebra, ${pronoun.toLowerCase()} ${getRandomComment('advancedAlgebra', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleFunctions').checked) {
+                        const level = document.getElementById('functions').value;
+                        mathAreasComments += `Regarding functions, ${pronoun.toLowerCase()} ${getRandomComment('functions', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleTrigonometry').checked) {
+                        const level = document.getElementById('trigonometry').value;
+                        mathAreasComments += `In trigonometry, ${pronoun.toLowerCase()} ${getRandomComment('trigonometry', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleAnalyticGeometry').checked) {
+                        const level = document.getElementById('analyticGeometry').value;
+                        mathAreasComments += `With analytic geometry, ${pronoun.toLowerCase()} ${getRandomComment('analyticGeometry', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleCalculus').checked) {
+                        const level = document.getElementById('calculus').value;
+                        mathAreasComments += `For calculus fundamentals, ${pronoun.toLowerCase()} ${getRandomComment('calculus', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleAdvancedStats').checked) {
+                        const level = document.getElementById('advancedStats').value;
+                        mathAreasComments += `In advanced statistics, ${pronoun.toLowerCase()} ${getRandomComment('advancedStats', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleDiscreteMath').checked) {
+                        const level = document.getElementById('discreteMath').value;
+                        mathAreasComments += `Regarding discrete mathematics, ${pronoun.toLowerCase()} ${getRandomComment('discreteMath', level)}.\n`;
+                    }
+                    if (document.getElementById('toggleModeling').checked) {
+                        const level = document.getElementById('modeling').value;
+                        mathAreasComments += `With mathematical modeling, ${pronoun.toLowerCase()} ${getRandomComment('modeling', level)}.\n`;
+                    }
+                }
+                
+                let additionalComment = mathAreasComments || "No specific academic comments selected.";
+                document.getElementById('additionalComment').textContent = additionalComment;
+                updateFullComment();
+            }
+            
+            function updateFullComment() {
+                const behavior = document.getElementById('behaviorComment').textContent;
+                const work = document.getElementById('workComment').textContent;
+                const academic = document.getElementById('additionalComment').textContent;
+                
+                let fullComment = `${behavior}\n\n${work}`;
+                if (academic !== "No specific academic comments selected.") {
+                    fullComment += `\n\n${academic}`;
+                }
                 document.getElementById('fullComment').textContent = fullComment;
             }
 
@@ -853,28 +1734,33 @@
                 }
             }
 
-            function copyBehaviorComment() {
-                const text = document.getElementById('behaviorComment').textContent;
-                copyToClipboard(text);
-            }
-
-            function copyWorkComment() {
-                const text = document.getElementById('workComment').textContent;
-                copyToClipboard(text);
-            }
-
-            function copyAdditionalComment() {
-                const text = document.getElementById('additionalComment').textContent;
-                copyToClipboard(text);
-            }
-
-            function copyFullComment() {
-                const text = document.getElementById('fullComment').textContent;
-                copyToClipboard(text);
-            }
-
+            // Event listeners for buttons
             generateBtn.addEventListener('click', generateComments);
-            copyFullBtn.addEventListener('click', copyFullComment);
+            refreshBtn.addEventListener('click', generateComments);
+            copyFullBtn.addEventListener('click', function() {
+                copyToClipboard(document.getElementById('fullComment').textContent);
+            });
+            
+            copyBehaviorBtn.addEventListener('click', function() {
+                copyToClipboard(document.getElementById('behaviorComment').textContent);
+            });
+            
+            refreshBehaviorBtn.addEventListener('click', refreshBehaviorComment);
+            
+            copyWorkBtn.addEventListener('click', function() {
+                copyToClipboard(document.getElementById('workComment').textContent);
+            });
+            
+            refreshWorkBtn.addEventListener('click', refreshWorkComment);
+            
+            copyAcademicBtn.addEventListener('click', function() {
+                copyToClipboard(document.getElementById('additionalComment').textContent);
+            });
+            
+            refreshAcademicBtn.addEventListener('click', refreshAcademicComment);
+            
+            // Initialize with generated comments
+            generateComments();
         });
     </script>
 </body>
