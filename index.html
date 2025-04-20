@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Core Subject Feedback Tool</title>
+  <!-- Memberstack Script -->
+  <script src="https://api.memberstack.io/static/memberstack.js" data-memberstack-id="95a249d2-e251-4b7e-91e6-31f8c73329d5"></script>
+  <style>
+    /* Hide original app by default */
+    iframe { display: none; }
+    /* Style promo page */
+    #promo-page {
+      text-align: center;
+      padding: 50px;
+      font-family: Arial;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PROMO PAGE -->
+  <div id="promo-page">
+    <h1>Premium Math, Science and English Feedback Generator</h1>
+    <p>Subscribe to unlock the full tool!</p>
+    <button data-ms-member="signup">Get Started</button>
+    <button data-ms-member="login">Log In</button>
+  </div>
+
+  <!-- EMBED YOUR ORIGINAL APP -->
+  <iframe
+    id="app-content"
+    src="original-math-tool.html"  <!-- Your 4000-line file -->
+    data-ms-content="membership"
+    data-ms-membership="Premium"
+  ></iframe>
+
+  <!-- Show app only after login -->
+  <script>
+    Memberstack.onStatusChange(function(status) {
+      if (status.isLoggedIn) {
+        document.getElementById("promo-page").style.display = "none";
+        document.getElementById("app-content").style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
